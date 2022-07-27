@@ -115,5 +115,19 @@ class BrakeBanner {
 		}
 		window.addEventListener('resize', resize);
 		resize()
+
+		// 监听按钮的鼠标事件
+		actionButton.interactive = true
+		actionButton.buttonMode = true
+
+		actionButton.on('mousedown', function () {
+			gsap.to(brakeLever, { duration: .6, rotation: -35 * Math.PI / 180 })
+		})
+
+		actionButton.on('mouseup', function () {
+			gsap.to(brakeLever, { duration: .6, rotation: 0 })
+		})
 	}
+
+	
 }
