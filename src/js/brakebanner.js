@@ -55,7 +55,28 @@ class BrakeBanner {
 		return textContainer
 	}
 
-	
+	createButton () {
+		const actionButton = new PIXI.Container();
+		const btnImage = this.resource('btn.png')
+		const btnCircleImage = this.resource('btn_circle.png')
+		const btnCircleImage2 = this.resource('btn_circle.png')
+
+		btnImage.pivot.x = btnImage.pivot.y = btnImage.width / 2
+		btnCircleImage.pivot.x = btnCircleImage.pivot.y = btnCircleImage.width / 2
+		btnCircleImage2.pivot.x = btnCircleImage2.pivot.y = btnCircleImage2.width / 2
+		btnCircleImage.scale.x = btnCircleImage.scale.y = 0.8
+		actionButton.addChild(btnImage)
+		actionButton.addChild(btnCircleImage)
+		actionButton.addChild(btnCircleImage2)
+
+		gsap.to(btnCircleImage.scale, { duration: 1, x: 1.2, y: 1.2, repeat: -1 })
+		gsap.to(btnCircleImage, { duration: 1, alpha: 0, repeat: -1 })
+		actionButton.scale.x = actionButton.scale.y = 0.6
+
+
+		this.stage.addChild(actionButton)
+		return actionButton
+	}
 
 	resource (name) {
 		return new PIXI.Sprite(this.loader.resources[name].texture)
@@ -83,9 +104,14 @@ class BrakeBanner {
 
 		brakeContainer.scale.x = brakeContainer.scale.y = 0.3
 
+		const actionButton = this.createButton()
+
 		function resize () {
 			brakeContainer.x = window.innerWidth - brakeContainer.width
 			brakeContainer.y = window.innerHeight - brakeContainer.height
+
+			actionButton.x = window.innerWidth - brakeContainer.width + 142
+			actionButton.y = window.innerHeight - brakeContainer.height + 220
 		}
 		window.addEventListener('resize', resize);
 		resize()
