@@ -3,7 +3,8 @@ class BrakeBanner {
 		this.app = new PIXI.Application({
 			width: window.innerWidth,
 			height: window.innerHeight,
-			backgroundColor: 0x1d9c9c,
+			// backgroundColor: 0x1d9c9c,
+			backgroundColor: 0xffffff,
 			antialias: true,
 			resolution: 1,
 			resizeTo: window
@@ -13,21 +14,15 @@ class BrakeBanner {
 
 		this.stage = this.app.stage
 
-		this.showText = this.createText('PixiJS and GSAP 入门笔记')
-		this.stage.addChild(this.showText)
+		// this.showText = this.createText('PixiJS and GSAP 入门笔记')
+		// this.stage.addChild(this.showText)
 
 		this.loader = new PIXI.Loader();
 		this.loader.add('btn.png', './images/btn.png')
 		this.loader.add('btn_circle.png', './images/btn_circle.png')
-		this.loader.add('shifter_bike.jpg', './images/shifter_bike.jpg')
-		this.loader.add('shifter_spokes.png', './images/shifter_spokes.png')
-		this.loader.add('shifter_uncovered.png', './images/shifter_uncovered.png')
-		this.loader.add('shifter_covered.png', './images/shifter_covered.png')
-		this.loader.add('shifter_clear.png', './images/shifter_clear.png')
-		this.loader.add('shifter_bike.png', './images/shifter_bike.png')
-		this.loader.add('shifter_wheel.png', './images/shifter_wheel.png')
-
-
+		this.loader.add('brake_bike.png', './images/brake_bike.png')
+		this.loader.add('brake_handlerbar.png', './images/brake_handlerbar.png')
+		this.loader.add('brake_lever.png', './images/brake_lever.png')
 		this.loader.load()
 		this.loader.onComplete.add(() => {
 			this.show()
@@ -60,8 +55,39 @@ class BrakeBanner {
 		return textContainer
 	}
 
+	
+
+	resource (name) {
+		return new PIXI.Sprite(this.loader.resources[name].texture)
+	}
+
 	show () {
-		const demoText = this.createText('loader加载完成', { fontSize: 36 }, { y: 300 })
-		this.stage.addChild(demoText)
+		// const demoText = this.createText('loader加载完成', { fontSize: 36 }, { y: 300 })
+		// this.stage.addChild(demoText)
+
+		const brakeContainer = new PIXI.Container()
+		this.stage.addChild(brakeContainer)
+
+		const brakeBike = this.resource('brake_bike.png')
+		brakeContainer.addChild(brakeBike)
+
+		const brakeLever = this.resource('brake_lever.png')
+		brakeLever.pivot.x = brakeLever.width
+		brakeLever.pivot.y = brakeLever.height
+		brakeLever.x = 780
+		brakeLever.y = 950
+		brakeContainer.addChild(brakeLever)
+
+		const brakeHandlerbar = this.resource('brake_handlerbar.png')
+		brakeContainer.addChild(brakeHandlerbar)
+
+		brakeContainer.scale.x = brakeContainer.scale.y = 0.3
+
+		function resize () {
+			brakeContainer.x = window.innerWidth - brakeContainer.width
+			brakeContainer.y = window.innerHeight - brakeContainer.height
+		}
+		window.addEventListener('resize', resize);
+		resize()
 	}
 }
