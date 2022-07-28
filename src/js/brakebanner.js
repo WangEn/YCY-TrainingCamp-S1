@@ -116,16 +116,89 @@ class BrakeBanner {
 		window.addEventListener('resize', resize);
 		resize()
 
+		// create particle
+		const particleContainer = new PIXI.Container()
+		const particles = []
+		this.stage.addChild(particleContainer)
+
+		const colors = [0xf1cf54, 0xb5cea8, 0xf1cf54, 0x818181, 0x000000]
+
+		for (let i = 0; i < 10; i++) {
+			const gr = new PIXI.Graphics()
+			gr.beginFill(colors[Math.floor(Math.random() * colors.length)])
+			gr.drawCircle(0, 0, 6)
+			gr.endFill()
+
+			const pItem = {
+				sx: Math.random() * window.innerWidth,
+				sy: Math.random() * window.innerHeight,
+				gr
+			}
+
+			gr.x = pItem.sx
+			gr.y = pItem.sy
+
+			particles.push(pItem)
+			particleContainer.addChild(gr)
+			particleContainer.rotation = Math.PI / 180 * 35
+		}
+
+		// move particle
+		let speed = 2
+		function loop () {
+			for (let i = 0; i < particles.length; i++) {
+				const partItem = particles[i]
+				let gr = partItem.gr
+				// partItem.x += speed
+				speed++
+				speed = Math.min(speed, 20)
+				gr.y += speed
+				if (gr.y >= window.innerHeight) {
+					gr.y = 0
+				}
+				if (speed === 20) {
+					gr.scale.x = 0.03
+					gr.scale.y = 40
+				}
+			}
+		}
+
+		function start () {
+			gsap.to(brakeLever, { duration: .6, rotation: 0 })
+			gsap.to(actionButton, {duration: 0.6, alpha: 1})
+			gsap.to(actionButton.scale, {duration: 0.6, x: 0.6, y: 0.6})
+
+			speed = 0
+			gsap.ticker.add(loop)
+		}
+
+		function pause () {
+			gsap.to(brakeLever, { duration: .6, rotation: -35 * Math.PI / 180 })
+			gsap.to(actionButton, {duration: 0.6, alpha: 0})
+			gsap.to(actionButton.scale, {duration: 0.6, x: 0.2, y: 0.2})
+
+			gsap.ticker.remove(loop)
+			for (let i = 0; i < particles.length; i++) {
+				const partItem = particles[i]
+				let gr = partItem.gr
+				gsap.to(gr, { duration: 0.3, x: partItem.sx, y: partItem.sy, ease: 'elastic.out' })
+				gsap.to(gr.scale, { duration: 0.3, x: 1, y: 1, ease: 'elastic.out' })
+			}
+		}
+
+		start()
+
 		// 监听按钮的鼠标事件
 		actionButton.interactive = true
 		actionButton.buttonMode = true
 
 		actionButton.on('mousedown', function () {
-			gsap.to(brakeLever, { duration: .6, rotation: -35 * Math.PI / 180 })
+			pause()
 		})
 
 		actionButton.on('mouseup', function () {
-			gsap.to(brakeLever, { duration: .6, rotation: 0 })
+			start()
+
 		})
 	}
 
