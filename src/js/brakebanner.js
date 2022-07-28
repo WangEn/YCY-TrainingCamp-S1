@@ -116,7 +116,7 @@ class BrakeBanner {
 		window.addEventListener('resize', resize);
 		resize()
 
-		// create particle
+		// 创建粒子线
 		const particleContainer = new PIXI.Container()
 		const particles = []
 		this.stage.addChild(particleContainer)
@@ -143,13 +143,12 @@ class BrakeBanner {
 			particleContainer.rotation = Math.PI / 180 * 35
 		}
 
-		// move particle
+		// 粒子运动
 		let speed = 2
 		function loop () {
 			for (let i = 0; i < particles.length; i++) {
 				const partItem = particles[i]
 				let gr = partItem.gr
-				// partItem.x += speed
 				speed++
 				speed = Math.min(speed, 20)
 				gr.y += speed
@@ -163,20 +162,29 @@ class BrakeBanner {
 			}
 		}
 
+		// 记录刹车容器Y轴初始位置
+		const conY = brakeContainer.y
+
 		function start () {
 			gsap.to(brakeLever, { duration: .6, rotation: 0 })
 			gsap.to(actionButton, {duration: 0.6, alpha: 1})
 			gsap.to(actionButton.scale, {duration: 0.6, x: 0.6, y: 0.6})
 
+			// 粒子运动侦听
 			speed = 0
 			gsap.ticker.add(loop)
+
+			// 运动时刹车容器状态
+			gsap.to(brakeBike, { duration: 0.3, alpha: 0.6 })
+			gsap.to(brakeContainer, { duration: 0.3, y: conY })
 		}
 
 		function pause () {
 			gsap.to(brakeLever, { duration: .6, rotation: -35 * Math.PI / 180 })
-			gsap.to(actionButton, {duration: 0.6, alpha: 0})
+			gsap.to(actionButton, {duration: 0.6, alpha: 0.1})
 			gsap.to(actionButton.scale, {duration: 0.6, x: 0.2, y: 0.2})
 
+			// 粒子回归初始状态
 			gsap.ticker.remove(loop)
 			for (let i = 0; i < particles.length; i++) {
 				const partItem = particles[i]
@@ -184,6 +192,9 @@ class BrakeBanner {
 				gsap.to(gr, { duration: 0.3, x: partItem.sx, y: partItem.sy, ease: 'elastic.out' })
 				gsap.to(gr.scale, { duration: 0.3, x: 1, y: 1, ease: 'elastic.out' })
 			}
+			// 刹车时容器状态
+			gsap.to(brakeBike, { duration: 0.3, alpha: 1 })
+			gsap.to(brakeContainer, { duration: 0.3, y: conY + 100 })
 		}
 
 		start()
